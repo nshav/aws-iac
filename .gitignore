@@ -1,0 +1,29 @@
+# Local .terraform directories
+.terraform/
+
+# Terraform lockfile for provider plugins is usually committed;
+# uncomment the next line if you prefer not to track it.
+# .terraform.lock.hcl
+
+# State files (may contain secrets) — must never be committed
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Variable files that may hold sensitive values
+*.tfvars
+*.tfvars.json
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI config and plan output files
+.terraformrc
+terraform.rc
+*.tfplan
