@@ -43,7 +43,7 @@ grafana:
   ingress:
     enabled: true
     hosts:
-      - "${GRAFANA_HOSTNAME}"
+      - "$${GRAFANA_HOSTNAME}"
     ingressClassName: nginx
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt

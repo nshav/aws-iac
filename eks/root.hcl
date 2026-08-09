@@ -30,7 +30,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 6.50"
+      version = "~> 5.0"
     }
   }
 }
@@ -44,4 +44,5 @@ EOF
 
 inputs = {
   cluster_name = get_env("CLUSTER_NAME")
+  environment = "study"
 }

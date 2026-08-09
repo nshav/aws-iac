@@ -5,6 +5,3 @@ include "root" {
 terraform {
   source = "../../modules/cert-manager"
 }
-
-
-

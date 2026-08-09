@@ -3,31 +3,40 @@ include "root" {
 }
 
 terraform {
-  source = "../../modules/eks"
+    source  = "tfr:///terraform-aws-modules/eks/aws?version=20.0.0"
+}
+
+inputs = {
+  cluster_version                       = 1.33
+  
+  vpc_id                                = dependency.vpc.outputs.vpc_id
+  subnet_ids                            = dependency.vpc.outputs.private_subnets
+  
+  cluster_endpoint_public_access = true
+  enable_cluster_creator_admin_permissions = true
+
+  eks_managed_node_groups = {
+    main = {
+      instance_types = ["t3.medium"]
+      min_size       = 1
+      max_size       = 3
+      desired_size   = 1
+
+      update_config = {
+        max_unavailable_percentage = 33
+      }
+    }
+  }
 }
 
 dependency "vpc" {
-    config_path = "../vpc"
-    mock_outputs = {
-      vpc_id             = "vpc-mock"
-      private_subnet_ids = ["subnet-mock-1", "subnet-mock-2"]
-      public_subnet_ids  = ["subnet-mock-3", "subnet-mock-4"]
-    }
-    mock_outputs_allowed_terraform_commands = ["plan", "validate"]
+  config_path = "${get_original_terragrunt_dir()}/../vpc"
+  mock_outputs = {
+    vpc_id = "vpc-00000000"
+    private_subnets = [
+      "subnet-00000000",
+      "subnet-00000001",
+      "subnet-00000002",
+    ]
   }
-
-dependency "iam" {
-    config_path = "../iam"
-    mock_outputs = {
-      cluster_role_arn = "arn:aws:iam::000000000000:role/mock-cluster"
-      node_group_arn   = "arn:aws:iam::000000000000:role/mock-node"
-    }
-    mock_outputs_allowed_terraform_commands = ["plan", "validate"]
-  }
-
-inputs = {
-  private_subnet_ids = dependency.vpc.outputs.private_subnet_ids
-  public_subnet_ids  = dependency.vpc.outputs.public_subnet_ids
-  cluster_role_arn   = dependency.iam.outputs.cluster_role_arn
-  node_group_arn     = dependency.iam.outputs.node_group_arn
 }
