@@ -28,3 +28,7 @@ override.tf.json
 .terraformrc
 terraform.rc
 *.tfplan
+
+actions.md
+root_*
+.env_*

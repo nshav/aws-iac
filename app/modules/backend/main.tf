@@ -1,0 +1,11 @@
+resource "kubernetes_manifest" "httpbin" {
+  manifest = yamldecode(file("./httpbin.yaml"))
+}
+
+resource "kubernetes_manifest" "service_httpbin" {
+  manifest = yamldecode(file("./service_httpbin.yaml"))
+}
+
+resource "kubernetes_manifest" "ingress_f5" {
+  manifest = yamldecode(file("./ingress_f5.yaml"))
+}

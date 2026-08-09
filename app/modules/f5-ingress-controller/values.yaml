@@ -1,0 +1,7 @@
+config:
+  wallarm:
+    enabled: true
+    api:
+      host: "us1.api.wallarm.com"
+      token: "vXAr2XFI9ISAiN1euz+pxDpGIm8G1CE9mMXdcnonlZW1PDJ5nQFOKo0t5fyzK9an"
+      # nodeGroup: defaultIngressGroup

@@ -1,9 +1,9 @@
 resource "aws_s3_bucket" "tfstate" {
-  bucket = "nshavandin-eks-tfstate"
-
-  lifecycle {
-    prevent_destroy = true
-  }
+  bucket = var.bucket_name
+  #force_destroy = true
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "aws_s3_bucket_versioning" "tfstate" {

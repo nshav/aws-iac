@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: httpbin-ingress
+  namespace: default
+  annotations:
+    httpbin.ingress.kubernetes.io/rewrite-target: /
+    nginx.org/wallarm-mode: "${WALLARM_MODE}"
+    nginx.org/wallarm-application: "100"
+    cert-manager.io/cluster-issuer: "letsencrypt"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "${hostname}"
+    http:
+      paths:
+      - path: / 
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: httpbin-svc
+            port:
+              number: 8000
+  tls:
+  - hosts:
+    - ["${hostname}"]
+    secretName: httpbin-tls
