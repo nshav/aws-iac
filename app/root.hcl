@@ -2,7 +2,6 @@ locals {
   region  = get_env("AWS_DEFAULT_REGION", "us-east-1")
   profile = get_env("AWS_PROFILE", "terraform-private-aws")
   cluster_name = get_env("CLUSTER_NAME")
-  get_env("HTTPBIN_HOSTNAME", "httpbin.requestsbin.online")
 }
 
 generate "backend" {
