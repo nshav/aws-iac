@@ -6,27 +6,40 @@ State bucket: `nshavandin-observability-state`. Requires a running cluster — s
 
 ## Unit (`study/observability`)
 
-Single unit → `modules/observability`, which installs three Helm releases:
+Single unit → `modules/observability`, three Helm releases:
 
 | Release | Chart | Purpose |
 |---------|-------|---------|
 | kube-prometheus-stack | `prometheus-community/kube-prometheus-stack` | Prometheus, Grafana, Alertmanager, exporters |
-| Loki | `grafana/loki` | log storage (SingleBinary mode + MinIO) |
+| Loki | `grafana/loki` | log storage (SingleBinary mode + built-in MinIO) |
 | Alloy | `grafana/alloy` | log collector (DaemonSet) → pushes to Loki |
 
-Each release is fed its own values file in the module: `prometheus-stack-values.yaml`, `loki-values.yaml`, `alloy-values.yaml`.
+Values files: `prometheus-stack-values.yaml`, `loki-values.yaml`, `alloy-values.yaml`.
+
+## Templating
+
+`prometheus-stack-values.yaml` contains placeholders and is rendered with `templatefile()` (loki/alloy use plain `file()` — no placeholders). All keys must be provided or `templatefile` errors:
+
+| Placeholder | From env |
+|-------------|----------|
+| `GRAFANA_HOSTNAME` | `GRAFANA_HOSTNAME` |
+| `GRAFANA_ADMIN_PASSWORD` | `GRAFANA_ADMIN_PASSWORD` (secret) |
+| `CLUSTER_NAME` | `CLUSTER_NAME` |
+| `AWS_DEFAULT_REGION` | `AWS_DEFAULT_REGION` |
+| `SLACK_HOOK` | `SLACK_HOOK` (optional, Alertmanager) |
 
 ## Usage
 
 ```bash
 export AWS_PROFILE=terraform-private-aws
-export CLUSTER_NAME=<your-eks-cluster>
+export CLUSTER_NAME=nsha-study
+export GRAFANA_HOSTNAME=grafana.requestsbin.online
+export GRAFANA_ADMIN_PASSWORD=...
 
-cd observability
-terragrunt apply
+cd observability && terragrunt apply
 ```
 
-Access Grafana / Loki locally:
+Access locally:
 
 ```bash
 kubectl port-forward -n monitoring svc/prometheus-stack-grafana 3000:80
@@ -35,8 +48,8 @@ kubectl port-forward -n monitoring svc/loki 3100:80
 
 ## Notes / gotchas
 
-- **Loki uses `deploymentMode: SingleBinary`** (not `Monolithic`). In the loki chart 7.x, `Monolithic` does not render the engine StatefulSet — only gateway/cache/minio come up and the gateway 502s. Keep it `SingleBinary`.
-- `loki.auth_enabled: false` for single-tenant — otherwise every read (Grafana/curl) and write (Alloy) must send an `X-Scope-OrgID` header.
-- Alloy collects pod logs only from the namespaces listed in `alloy-values.yaml` (`discovery.kubernetes` → `namespaces`). Alloy config is written in **Alloy syntax** (comments are `//`, not `#`).
-- Grafana Ingress carries a `cert-manager.io/cluster-issuer` annotation — a valid certificate additionally requires cert-manager + a matching `ClusterIssuer` + ingress-nginx + a DNS record (see `app/`).
-- MinIO backing Loki is the chart's built-in (deprecated) instance — fine for a pet project; use a real S3 bucket for anything serious.
+- **Loki uses `deploymentMode: SingleBinary`** (not `Monolithic`). In loki chart 7.x, `Monolithic` doesn't render the engine StatefulSet — only gateway/cache/minio, and the gateway 502s. Keep `SingleBinary`.
+- `loki.auth_enabled: false` for single-tenant — otherwise every read (Grafana/curl) and write (Alloy) must send `X-Scope-OrgID`.
+- Alloy collects pod logs only from namespaces listed in `alloy-values.yaml`; its config is **Alloy syntax** (comments are `//`, not `#`).
+- Grafana Ingress carries `cert-manager.io/cluster-issuer` — a real cert also needs cert-manager + a matching `ClusterIssuer` + an ingress controller + a DNS record (see `app/`).
+- Built-in MinIO backing Loki is the chart's deprecated instance — fine for a pet project; use a real S3 bucket otherwise.
