@@ -6,8 +6,8 @@ metadata:
   namespace: default
   annotations:
     httpbin.ingress.kubernetes.io/rewrite-target: /
-    nginx.org/wallarm-mode: "$${WALLARM_MODE}"
-    nginx.org/wallarm-application: "100"
+    nginx.ingress.kubernetes.io/wallarm-mode: "${wallarm_mode}"
+    nginx.ingress.kubernetes.io/wallarm-application: "100"
     cert-manager.io/cluster-issuer: "letsencrypt"
 spec:
   ingressClassName: nginx

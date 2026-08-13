@@ -1,5 +1,5 @@
 resource "kubernetes_manifest" "cluster_issuer" {
-  manifest   = yamldecode(file("./cluster_issuer.yaml"))
+  manifest = yamldecode(file("./cluster_issuer.yaml"))
 }
 
 resource "kubernetes_manifest" "ingress_f5_namespace" {
@@ -15,6 +15,10 @@ resource "helm_release" "f5_ingress" {
   version    = var.wallarm_ic_version
 
   values = [
-    "${file("values.yaml")}"
+    templatefile("${path.module}/values.yaml", {
+      wallarm_host  = var.wallarm_api_host
+      wallarm_token = var.wallarm_api_token
+    })
+
   ]
 }

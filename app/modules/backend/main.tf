@@ -9,5 +9,6 @@ resource "kubernetes_manifest" "service_httpbin" {
 resource "kubernetes_manifest" "ingress_f5" {
     manifest = yamldecode(templatefile("${path.module}/ingress_f5.yaml", {
       hostname = var.httpbin_hostname
+      wallarm_mode = var.wallarm_mode
     }))
   }

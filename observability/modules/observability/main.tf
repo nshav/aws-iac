@@ -1,5 +1,5 @@
 resource "helm_release" "kube-prometheus-stack" {
-  atomic     = true
+  atomic     = false
   name       = var.kps_name
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
@@ -7,13 +7,18 @@ resource "helm_release" "kube-prometheus-stack" {
   create_namespace = true
 
   values = [
-    "${file("prometheus-stack-values.yaml")}"
+    templatefile("${path.module}/prometheus-stack-values.yaml", {
+      cluster_name           = var.cluster_name
+      aws_region             = var.aws_region
+      grafana_admin_password = var.grafana_admin_password
+      grafana_hostname       = var.grafana_hostname
+    })
   ]
 }
 
 
 resource "helm_release" "loki" {
-  atomic     = true
+  atomic     = false
   name       = var.loki_name
   repository = "https://grafana.github.io/helm-charts"
   chart      = "loki"

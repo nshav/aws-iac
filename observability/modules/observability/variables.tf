@@ -21,3 +21,24 @@ variable "alloy_name" {
   type        = string
   default     = "alloy"
 }
+
+variable "cluster_name" {
+  description = "Cluster name"
+  type        = string
+}
+
+variable "aws_region" {
+  description = "AWS regions"
+  type        = string
+}
+
+variable "grafana_admin_password" {
+  description = "Grafana admin password"
+  type        = string
+  sensitive   = true
+}
+
+variable "grafana_hostname" {
+  description = "Grafana hostname"
+  type        = string
+}

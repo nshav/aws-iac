@@ -3,24 +3,31 @@ include "root" {
 }
 
 terraform {
-    source  = "tfr:///terraform-aws-modules/eks/aws?version=20.0.0"
+    source  = "tfr:///terraform-aws-modules/eks/aws?version=21.24.2"
 }
 
 inputs = {
-  cluster_version                       = 1.33
+
+  kubernetes_version                       = "1.33"
   
   vpc_id                                = dependency.vpc.outputs.vpc_id
   subnet_ids                            = dependency.vpc.outputs.private_subnets
   
-  cluster_endpoint_public_access = true
+  endpoint_public_access = true
   enable_cluster_creator_admin_permissions = true
+  
+  addons = {
+    coredns    = {}
+    kube-proxy = {}
+    vpc-cni    = { before_compute = true }
+  }
 
   eks_managed_node_groups = {
     main = {
       instance_types = ["t3.medium"]
       min_size       = 1
       max_size       = 3
-      desired_size   = 1
+      desired_size   = 2
 
       update_config = {
         max_unavailable_percentage = 33

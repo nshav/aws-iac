@@ -21,7 +21,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: standard
+          storageClassName: ebs-gp3
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -29,28 +29,28 @@ prometheus:
 
     # External labels for federation
     externalLabels:
-      cluster: "${CLUSTER_NAME}"
-      region: "${AWS_DEFAULT_REGION}"
+      cluster: "${cluster_name}"
+      region: "${aws_region}"
 
 # Grafana configuration
 grafana:
   enabled: true
 
   # Admin credentials (use secrets in production)
-  adminPassword: "${GRAFANA_ADMIN_PASSWORD}"
+  adminPassword: "${grafana_admin_password}"
 
   # Ingress configuration
   ingress:
     enabled: true
     hosts:
-      - "$${GRAFANA_HOSTNAME}"
+      - "${grafana_hostname}"
     ingressClassName: nginx
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
     tls:
       - secretName: grafana-tls
         hosts:
-          - "${GRAFANA_HOSTNAME}"
+          - "${grafana_hostname}"
 
   # Persistence for dashboards
   persistence:
@@ -67,65 +67,6 @@ grafana:
 # Alertmanager configuration
 alertmanager:
   enabled: false
-
-#   alertmanagerSpec:
-#     # Resource configuration
-#     resources:
-#       requests:
-#         cpu: 100m
-#         memory: 128Mi
-#       limits:
-#         cpu: 500m
-#         memory: 512Mi
-
-#     # Storage for silences and notification state
-#     storage:
-#       volumeClaimTemplate:
-#         spec:
-#           storageClassName: standard
-#           accessModes: ["ReadWriteOnce"]
-#           resources:
-#             requests:
-#               storage: 5Gi
-
-#   # Alertmanager configuration
-#   config:
-#     global:
-#       resolve_timeout: 5m
-#       slack_api_url: "${SLACK_HOOK}"
-
-#     route:
-#       group_by: ['alertname', 'cluster', 'service']
-#       group_wait: 10s
-#       group_interval: 10s
-#       repeat_interval: 12h
-#       receiver: 'default'
-#       routes:
-#         - matchers:
-#             - severity="critical"
-#           receiver: 'critical-alerts'
-#         - matchers:
-#             - severity="warning"
-#           receiver: 'warning-alerts'
-
-#     receivers:
-#       - name: 'default'
-#         slack_configs:
-#           - channel: '#alerts'
-#             title: 'Alert: {{ .CommonLabels.alertname }}'
-#             text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
-
-#       - name: 'critical-alerts'
-#         slack_configs:
-#           - channel: '#critical-alerts'
-#             title: 'CRITICAL: {{ .CommonLabels.alertname }}'
-#             text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
-
-#       - name: 'warning-alerts'
-#         slack_configs:
-#           - channel: '#warning-alerts'
-#             title: 'Warning: {{ .CommonLabels.alertname }}'
-#             text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
 
 # Node exporter configuration
 nodeExporter:
