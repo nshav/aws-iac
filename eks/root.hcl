@@ -26,13 +26,6 @@ generate "provider" {
   contents  = <<EOF
 terraform {
   required_version = ">= 1.14.0"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
 }
 
 provider "aws" {
@@ -43,6 +36,6 @@ EOF
 }
 
 inputs = {
-  cluster_name = get_env("CLUSTER_NAME")
+  name = get_env("CLUSTER_NAME")
   environment = "study"
 }

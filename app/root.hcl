@@ -77,7 +77,3 @@ provider "helm" {
 }
 EOF
 }
-
-inputs = {
-  httpbin_hostname = get_env("HTTPBIN_HOSTNAME")
-} 
